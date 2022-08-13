@@ -23,6 +23,9 @@ def create_app(test_config=None):
     from source import db
     db.init_app(app)
 
+    @app.route('/hello')
+    def hello():
+        return 'Hola mundo';
 
     from source.rutas import (
         auth
