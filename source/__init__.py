@@ -1,5 +1,5 @@
 import os
-import flask from Flask
+from flask import Flask
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -20,11 +20,14 @@ def create_app(test_config=None):
 
     #app.config['SECRET_KEY'] = 'Tf64lfBP0SCRtgUdoRg'
 
-    from api import db
+    from source import db
     db.init_app(app)
 
-    import api.rutas
 
-    app.register_blueprints(auth.bp)
+    from source.rutas import (
+        auth
+    )
+
+    app.register_blueprint(auth.bp)
 
     return app
