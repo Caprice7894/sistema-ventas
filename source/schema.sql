@@ -1,0 +1,91 @@
+DROP TABLE IF EXISTS objeto_tipo;
+DROP TABLE IF EXISTS objetos;
+DROP TABLE IF EXISTS objeto_precio;
+DROP TABLE IF EXISTS objeto_lote;
+DROP TABLE IF EXISTS objeto_tipo_unidades;
+DROP TABLE IF EXISTS lotes;
+DROP TABLE IF EXISTS pagos_lote;
+DROP TABLE IF EXISTS fact_items;
+DROP TABLE IF EXISTS factura;
+DROP TABLE IF EXISTS fact_metodo;
+DROP TABLE IF EXISTS usuario;
+
+
+CREATE TABLE usuario(
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ nombre TEXT NOT NULL,
+ password TEXT NOT NULL,
+ telefono TEXT NOT NULL
+);
+
+CREATE TABLE objeto_tipo(
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ nombre TEXT NOT NULL,
+ foto_filename TEXT,
+ description TEXT NULL
+);
+
+CREATE TABLE objeto_tipo_unidades(
+ objeto_id INTEGER NOT NULL,
+ unidades INTEGER NOT NULL DEFAULT 0,
+ FOREIGN KEY (objeto_id) REFERENCES objeto_tipo(id)
+);
+
+CREATE TABLE objeto_precio(
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ precio INTEGER NOT NULL DEFAULT 100,
+ fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ objeto_id INTEGER NOT NULL,
+ FOREIGN KEY (objeto_id) REFERENCES objeto_tipo(id)
+);
+
+CREATE TABLE objetos(
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ objeto_tipo_id INTEGER NOT NULL,
+ FOREIGN KEY (objeto_tipo_id) REFERENCES objeto_tipo(id)
+);
+
+CREATE TABLE lotes(
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ proveedor TEXT NULL
+);
+
+CREATE TABLE pagos_lote(
+ lote_id INTEGER NOT NULL,
+ lote_monto INTEGER NOT NULL,
+ lote_metodo TEXT NOT NULL,
+ FOREIGN KEY (lote_id) REFERENCES lotes(id)
+);
+
+CREATE TABLE objeto_lote(
+ lote_id INTEGER NOT NULL,
+ cantidad INTEGER NOT NULL DEFAULT 0,
+ precio INTEGER NOT NULL DEFAULT 100,
+ objeto_id INTEGER NOT NULL,
+ FOREIGN KEY (lote_id) REFERENCES lotes(id),
+ FOREIGN KEY (objeto_id) REFERENCES objetos(id)
+);
+
+CREATE TABLE factura(
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ comprador TEXT NULL,
+ usuario_id INTEGER NOT NULL,
+ FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+);
+
+CREATE TABLE fact_metodo(
+ fact_id INTEGER NOT NULL,
+ metodo TEXT NOT NULL,
+ monto INTEGER NOT NULL DEFAULT 100,
+ FOREIGN KEY (fact_id) REFERENCES factura(id)
+);
+
+CREATE TABLE fact_objetos(
+ fact_id INTEGER NOT NULL,
+ cantidad INTEGER NOT NULL,
+ objeto_id INTEGER NOT NULL,
+ FOREIGN KEY (fact_id) REFERENCES factura(id),
+ FOREIGN KEY (objeto_id) REFERENCES objeto_tipo(id)
+);
