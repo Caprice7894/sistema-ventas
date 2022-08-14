@@ -18,7 +18,6 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    #app.config['SECRET_KEY'] = 'Tf64lfBP0SCRtgUdoRg'
 
     from source import db
     db.init_app(app)
