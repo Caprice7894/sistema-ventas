@@ -5,18 +5,25 @@ DROP TABLE IF EXISTS objeto_lote;
 DROP TABLE IF EXISTS objeto_tipo_unidades;
 DROP TABLE IF EXISTS lotes;
 DROP TABLE IF EXISTS pagos_lote;
-DROP TABLE IF EXISTS fact_items;
+DROP TABLE IF EXISTS fact_objetos;
 DROP TABLE IF EXISTS factura;
 DROP TABLE IF EXISTS fact_metodo;
-DROP TABLE IF EXISTS usuario;
+DROP TABLE IF EXISTS usuarios;
+DROP TABLE IF EXISTS usuario_role;
 
 
-CREATE TABLE usuario(
+CREATE TABLE usuarios(
  id INTEGER PRIMARY KEY AUTOINCREMENT,
  nombre TEXT NOT NULL,
  password TEXT NOT NULL,
  telefono TEXT NOT NULL
 );
+
+CREATE TABLE usuario_role(
+ usuario_id INTEGER NOT NULL,
+ role INTEGER NOT NULL DEFAULT 1,
+ FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+); 
 
 CREATE TABLE objeto_tipo(
  id INTEGER PRIMARY KEY AUTOINCREMENT,
