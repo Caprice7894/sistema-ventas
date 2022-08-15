@@ -62,14 +62,59 @@ def register():
         except db.IntegrityError:
             error = 'ALGO HA IDO MAL DURANTE EL REGISTRO'
 
-        return {'jwt': jwt.encode(
+        return 
+
+    return {'error': 'ONLY RECIEVE POST METHOD'}
+
+@bp.route('/login', methods=['POST'])
+def login():
+    if request.method == 'POST':
+        telefono = request.form['telefono']
+        password = request.form['password']
+        db = get_db()
+        error = None
+
+        if telefono is None:
+            error = 'EL CAMPO TELEFONO ES REQUERIDO.'
+        elif password is None:
+            error = 'EL CAMPO CONTRASEÑA ES REQUERIDO.'
+
+        if error is not None:
+            return {'error': error}, 400
+
+        telefono = escape(telefono)
+        password = escape(password)
+
+        try:
+            usuario = db.execute(
+                'SELECT id, nombre, password, role FROM usuarios u LEFT JOIN usuario_role WHERE u.id = usuario_id AND u.telefono = ?',
+                (telefono,)
+            ).fetchone()
+        except db.IntegrityError:
+            error = 'ALGO HA FALLADO.'
+
+        if usuario is None:
+            error = 'TELEFONO INCORRECTO.'
+        elif not check_password_hash(usuario['password'], password):
+            error = 'CONTRASEÑA INCORRECTA.'
+
+        if error is not None:
+            return {'error', error}, 400
+
+        exp_date = str(datetime.now() + timedelta(hours=20))
+        token = jwt.encode(
             {
-                'user_id':usuario['id'],
-                'user_role':usuario['role'],
-                'exp': str(datetime.utcnow() + timedelta(seconds=60))
+                'exp': exp_date,
+                'usuario_id': usuario['id'],
+                'usuario_role': usuario['role']
             },
             current_app.config['SECRET_KEY']
-        )}
+        )
 
+        return {
+            'nombre': usuario['nombre'],
+            'token': token,
+            'expiracion': exp_date
+        }
 
     return {'error': 'ONLY RECIEVE POST METHOD'}
