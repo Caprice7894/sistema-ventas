@@ -22,14 +22,16 @@ def create_app(test_config=None):
     from source import db
     db.init_app(app)
 
-    @app.route('/hello')
-    def hello():
-        return 'Hola mundo';
-
     from source.rutas import (
         auth
     )
+    from source.complementos.authorization import login_required
 
     app.register_blueprint(auth.bp)
+
+    @app.route('/hello')
+    @login_required
+    def hello():
+        return 'Hola mundo';
 
     return app
